@@ -1,10 +1,6 @@
 import { NextResponse } from "next/server";
 import OpenAI from "openai";
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
-
 const DEFAULT_SYSTEM_PROMPT =
   "Du bist ein lustiger und sarkastischer Assistent. Beantworte kurz und mit einem Augenzwinkern. Nutze den gegebenen Nachrichtenverlauf als Kontext.";
 
@@ -15,6 +11,10 @@ export async function POST(req: Request) {
       { status: 500 }
     );
   }
+
+  const openai = new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY,
+  });
 
   try {
     const { messages, systemPrompt } = await req.json();
