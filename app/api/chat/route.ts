@@ -29,15 +29,23 @@ export async function POST(req: Request) {
             .join("\n")
         : "Keine Nachrichten vorhanden.";
 
-    const prompt = `${systemPrompt || DEFAULT_SYSTEM_PROMPT}\n\nBisherige Nachrichten:\n${serialized}\n\nGib eine kurze, sarkastische Antwort.`;
-
-    const completion = await openai.responses.create({
-      model: "gpt-4.1-mini",
-      input: prompt,
+    const completion = await openai.chat.completions.create({
+      model: "gpt-4o-mini",
+      messages: [
+        {
+          role: "system",
+          content: systemPrompt || DEFAULT_SYSTEM_PROMPT,
+        },
+        {
+          role: "user",
+          content: `Bisherige Nachrichten:\n${serialized}\n\nGib eine kurze, sarkastische Antwort.`,
+        },
+      ],
+      max_tokens: 150,
     });
 
     const text =
-      completion.output?.[0]?.content?.[0]?.text ??
+      completion.choices?.[0]?.message?.content ??
       "Konnte keine Antwort generieren.";
 
     return NextResponse.json({ reply: text });
